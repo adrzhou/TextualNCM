@@ -1,0 +1,5 @@
+venv
+pyncm
+credentials
+__pycache__
+.idea
