@@ -1,0 +1,11 @@
+Screen {
+    layout: horizontal;
+}
+
+MenuTree {
+    width: 1fr;
+}
+
+TrackTable {
+    width: 2fr;
+}
