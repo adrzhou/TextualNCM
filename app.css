@@ -1,11 +1,10 @@
 Screen {
-    layout: horizontal;
+    layout: grid;
+    grid-size: 2 2;
+    grid-columns: 1fr 2fr;
+    grid-rows: 90% 10%;
 }
 
-MenuTree {
-    width: 1fr;
-}
-
-TrackTable {
-    width: 2fr;
+#table {
+    row-span: 2;
 }
