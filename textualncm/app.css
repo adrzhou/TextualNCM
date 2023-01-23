@@ -1,0 +1,15 @@
+Screen {
+    layout: grid;
+    grid-size: 2 2;
+    grid-columns: 1fr 2fr;
+    grid-rows: 90% 10%;
+}
+
+#table {
+    row-span: 2;
+}
+
+#player {
+    align: center middle;
+    height: 100%
+}
