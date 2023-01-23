@@ -1,6 +1,6 @@
-venv
-pyncm
 __pycache__
+venv
+.idea
+pyncm
 save
 downloads
-.idea
