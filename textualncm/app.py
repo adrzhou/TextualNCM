@@ -5,6 +5,7 @@ from _downloader import Downloader
 from _player import Player
 from _proxy import app as proxy
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.widgets import Header, Footer, DataTable
 from textual.containers import Container
 from multiprocessing import Process
@@ -14,7 +15,7 @@ class NeteaseCloudMusic(App):
     """A textual user interface for Netease Cloud Music"""
 
     CSS_PATH = 'app.css'
-    BINDINGS = [('p', 'play', 'Play'),
+    BINDINGS = [Binding('p', 'play', 'Play'),
                 ('d', 'download', 'Download'), ('q', 'quit', 'Quit')]
     downloader = Downloader()
 

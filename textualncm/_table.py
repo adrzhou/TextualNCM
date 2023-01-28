@@ -16,7 +16,8 @@ class TrackTable(DataTable):
         Binding("k", "cursor_up", "Cursor Up", show=False),
         Binding("j", "cursor_down", "Cursor Down", show=False),
         Binding("h", "cursor_left", "Cursor Left", show=False),
-        Binding("l", "cursor_right", "Cursor Right", show=False)
+        Binding("l", "cursor_right", "Cursor Right", show=False),
+        Binding("p", "play", "Play")
     ]
 
     def on_mount(self):
@@ -81,7 +82,7 @@ class TrackTable(DataTable):
             self.tracks = tracks
             super().__init__(sender)
 
-    def key_p(self):
+    def action_play(self):
         track = self.tracks[self.cursor_row]
         message = self.Play(self, track, self.tracks)
         self.emit_no_wait(message)
