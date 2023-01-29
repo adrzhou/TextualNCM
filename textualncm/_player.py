@@ -131,4 +131,7 @@ class Player(Static):
 
     def on_player_end_reached(self, message: Message):
         _ = message
-        self.next()
+        if self.mode == 'single':
+            self.play(self.track)
+        else:
+            self.next()
