@@ -30,6 +30,7 @@ class Track:
         name: str = ''
         artists: str = ''
         local: bool = False
+        liked: bool = False
         length: int = 0
 
     def __hash__(self):

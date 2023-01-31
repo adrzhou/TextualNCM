@@ -2,7 +2,7 @@ Screen {
     layout: grid;
     grid-size: 2 2;
     grid-columns: 1fr 2fr;
-    grid-rows: 90% 10%;
+    grid-rows: 85% 15%;
 }
 
 #table {

@@ -9,6 +9,7 @@ from rich.progress import Progress, BarColumn, TextColumn
 from rich.console import group
 from rich.text import Text
 from rich.columns import Columns
+from rich.padding import Padding
 from pyncm import apis
 
 
@@ -44,11 +45,18 @@ class Player(Static):
             mode = '🔂 [M]单曲循环'
         else:
             mode = '🔀 [M]随机播放'
-        columns = (last, play, _next, mode)
+        upper = (last, play, _next, mode)
+
+        like = '[Ctrl-F]取消喜欢' if self.track.liked else '[Ctrl-F]喜欢'
+        download = '[Ctrl-D]删除本地' if self.track.local else '[Ctrl-D]下载'
+        playlist = '[G]播放列表'
+        lower = (like, download, playlist)
+
         yield Text(self.track.name, justify='center')
         yield Text(self.track.artists, justify='center')
         yield self.progress
-        yield Columns(columns, expand=True)
+        yield Padding(Columns(upper, expand=True), 1)
+        yield Columns(lower, expand=True)
 
     def play(self, track: Track):
         self.player.stop()
