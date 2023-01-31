@@ -10,6 +10,6 @@ Screen {
 }
 
 #player {
-    align: center middle;
+    content-align: center middle;
     height: 100%
 }

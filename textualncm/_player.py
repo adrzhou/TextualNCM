@@ -2,7 +2,7 @@ from vlc import MediaPlayer, Media, EventManager, EventType
 from _track import Track
 from datetime import timedelta
 from random import randint
-from textual.widgets import Static
+from textual.widget import Widget
 from textual.reactive import reactive
 from textual.message import Message, MessageTarget
 from rich.progress import Progress, BarColumn, TextColumn
@@ -13,7 +13,7 @@ from rich.padding import Padding
 from pyncm import apis
 
 
-class Player(Static):
+class Player(Widget):
     player: MediaPlayer = MediaPlayer()
     manager: EventManager = player.event_manager()
     track: Track = Track.EmptyTrack()
@@ -23,20 +23,26 @@ class Player(Static):
                         auto_refresh=False,
                         expand=True)
     bar = progress.add_task('', total=None, elapsed='0:00', length='0:00')
+
     time: int = reactive(0)
-    mode: str = 'loop'
+    is_playing: bool = reactive(False)
+    mode: str = reactive('loop')
+
     playlist: list = []
     index: int = 0
 
     def on_mount(self):
-        self.update(self.get_renderable())
         self.set_interval(0.9, self.update_time)
         self.manager.event_attach(EventType.MediaPlayerEndReached, self.end_reached)
 
+    def render(self):
+        return self.renderable
+
+    @property
     @group()
-    def get_renderable(self):
+    def renderable(self):
         last = "⏮ [ 上一首"
-        play = "⏯ [ 空格]暂停" if self.player.is_playing() else "⏯ [ 空格]播放"
+        play = "⏯ [ 空格]暂停" if self.is_playing else "⏯ [ 空格]播放"
         _next = "⏭ ] 下一首"
         if self.mode == 'loop':
             mode = '🔁 [M]列表循环'
@@ -68,14 +74,15 @@ class Player(Static):
         media = Media(url)
         self.player.set_media(media)
         self.player.play()
-        self.update(self.get_renderable())
+        self.is_playing = True
 
     def pause(self):
         if self.player.is_playing():
             self.player.pause()
+            self.is_playing = False
         elif self.player.will_play():
             self.player.play()
-        self.update(self.get_renderable())
+            self.is_playing = True
 
     def set_playlist(self, playlist: list[Track]):
         self.playlist = playlist
@@ -89,16 +96,12 @@ class Player(Static):
 
     def next(self):
         if self.playlist:
-            print('has playlist')
             if self.mode == 'shuffle':
                 self.index = randint(0, len(self.playlist))
             else:
                 self.index = (self.index + 1) % len(self.playlist)
-                print(f'index={self.index}')
             track = self.playlist[self.index]
             self.play(track)
-            print('track played')
-        print('next call end')
 
     def toggle_mode(self):
         if self.mode == 'loop':
@@ -107,7 +110,6 @@ class Player(Static):
             self.mode = 'shuffle'
         elif self.mode == 'shuffle':
             self.mode = 'loop'
-        self.update(self.get_renderable())
 
     def update_time(self) -> None:
         if self.player.is_playing():

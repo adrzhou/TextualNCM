@@ -7,7 +7,6 @@ from _proxy import app as proxy
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Header, Footer, DataTable
-from textual.containers import Container
 from multiprocessing import Process
 
 
@@ -30,7 +29,7 @@ class NeteaseCloudMusic(App):
         yield Header()
         yield MenuTree('我的', )
         yield TrackTable(id='table')
-        yield Container(Player(), id='player')
+        yield Player(id='player')
         yield Footer()
 
     def action_download(self):
