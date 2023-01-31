@@ -123,7 +123,6 @@ class Player(Static):
             else:
                 length = str(timedelta(seconds=round(self.track.length / 1000)))[2:]
                 progress.update(self.bar, elapsed=elapsed, length=length, total=self.track.length, completed=time)
-            progress.refresh()
 
     def end_reached(self, event):
         _ = event

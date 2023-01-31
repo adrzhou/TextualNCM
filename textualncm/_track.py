@@ -21,7 +21,6 @@ class Track:
     def progress(self):
         with self._progress as p:
             p.update(self.task, total=self.size, completed=self.xfered)
-            p.refresh()
             return p
 
     @dataclass
