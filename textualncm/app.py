@@ -16,7 +16,12 @@ class NeteaseCloudMusic(App):
 
     CSS_PATH = 'app.css'
     BINDINGS = [Binding('p', 'play', 'Play'),
-                ('d', 'download', 'Download'), ('q', 'quit', 'Quit')]
+                Binding('d', 'download', 'Download'),
+                Binding('q', 'quit', 'Quit'),
+                Binding('m', 'mode', 'Toggle Mode', show=False),
+                Binding('space', 'pause', 'Play/Pause', show=False),
+                Binding('left_square_bracket', 'prev', 'Prev', show=False),
+                Binding('right_square_bracket', 'next', 'Next', show=False)]
     downloader = Downloader()
 
     def compose(self) -> ComposeResult:
@@ -47,6 +52,22 @@ class NeteaseCloudMusic(App):
         self.downloader.shutdown()
         self.exit()
 
+    def action_pause(self):
+        player: Player = self.query_one(Player)
+        player.pause()
+
+    def action_mode(self):
+        player: Player = self.query_one(Player)
+        player.toggle_mode()
+
+    def action_prev(self):
+        player: Player = self.query_one(Player)
+        player.prev()
+
+    def action_next(self):
+        player: Player = self.query_one(Player)
+        player.next()
+
     def on_menu_tree_update_table(self, message: MenuTree.UpdateTable):
         table: TrackTable = self.query_one(DataTable)
         table.tracks = message.tracks
@@ -56,22 +77,6 @@ class NeteaseCloudMusic(App):
         player: Player = self.query_one(Player)
         player.play(message.track)
         player.set_playlist(message.tracks)
-
-    def key_space(self):
-        player: Player = self.query_one(Player)
-        player.pause()
-
-    def key_m(self):
-        player: Player = self.query_one(Player)
-        player.toggle_mode()
-
-    def key_left_square_bracket(self):
-        player: Player = self.query_one(Player)
-        player.prev()
-
-    def key_right_square_bracket(self):
-        player: Player = self.query_one(Player)
-        player.next()
 
 
 if __name__ == '__main__':
