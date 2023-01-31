@@ -15,13 +15,15 @@ class NeteaseCloudMusic(App):
     """A textual user interface for Netease Cloud Music"""
 
     CSS_PATH = 'app.css'
-    BINDINGS = [Binding('p', 'play', 'Play'),
-                Binding('d', 'download', 'Download'),
-                Binding('q', 'quit', 'Quit'),
-                Binding('m', 'mode', 'Toggle Mode', show=False),
-                Binding('space', 'pause', 'Play/Pause', show=False),
-                Binding('left_square_bracket', 'prev', 'Prev', show=False),
-                Binding('right_square_bracket', 'next', 'Next', show=False)]
+    BINDINGS = [
+        Binding('p', 'play', 'Play'),
+        Binding('d', 'download', 'Download'),
+        Binding('q', 'quit', 'Quit'),
+        Binding('m', 'mode', 'Toggle Mode', show=False),
+        Binding('space', 'pause', 'Play/Pause', show=False),
+        Binding('left_square_bracket', 'prev', 'Prev', show=False),
+        Binding('right_square_bracket', 'next', 'Next', show=False)
+    ]
     downloader = Downloader()
 
     def compose(self) -> ComposeResult:

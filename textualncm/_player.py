@@ -24,7 +24,6 @@ class Player(Static):
                         expand=True)
     bar = progress.add_task('', total=None, elapsed='0:00', length='0:00')
     time: int = reactive(0)
-    playing: bool = reactive(player.is_playing)
     mode: str = 'loop'
     playlist: list = []
     index: int = 0
