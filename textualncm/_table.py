@@ -1,3 +1,4 @@
+import asyncio
 from pyncm import apis
 from _track import Track
 from pathlib import Path
@@ -17,7 +18,8 @@ class TrackTable(DataTable):
         Binding("j", "cursor_down", "Cursor Down", show=False),
         Binding("h", "cursor_left", "Cursor Left", show=False),
         Binding("l", "cursor_right", "Cursor Right", show=False),
-        Binding("p", "play", "Play")
+        Binding("p", "play", "Play"),
+        Binding("f", "like", "Like/Unlike")
     ]
 
     def on_mount(self):
@@ -29,27 +31,32 @@ class TrackTable(DataTable):
         self.set_interval(1, self.update_progress)
 
     @cached_property
-    def likelist(self):
+    def likes(self) -> list[int]:
         return apis.user.GetUserLikeList()['ids']
+
+    @cached_property
+    def locals(self) -> list[int]:
+        return [int(path.stem) for path in Path().joinpath('downloads').iterdir()]
 
     def update(self):
         self.clear()
         for track in self.tracks:
             row = []
-            if track.liked is None:
-                track.liked = track.id in self.likelist
+
+            track.liked = track.id in self.likes
             if track.liked:
                 row.append(":sparkling_heart:")
             else:
                 row.append('')
             row.extend([track.name, track.artists, track.album])
-            if track.local is None:
-                track.local = Path().joinpath('downloads', f'{track.id}.mp3').exists()
+
+            track.local = track.id in self.locals
             if track.local:
                 row.append(':white_heavy_check_mark:')
             else:
                 row.append('')
             self.add_row(*row)
+
         self.refresh()
 
     def update_progress(self):
@@ -86,3 +93,27 @@ class TrackTable(DataTable):
         track = self.tracks[self.cursor_row]
         message = self.Play(self, track, self.tracks)
         self.emit_no_wait(message)
+
+    def action_like(self):
+        loop = asyncio.get_event_loop()
+        track = self.tracks[self.cursor_row]
+        track.liked = not track.liked
+
+        def like():
+            apis.track.SetLikeTrack(track.id, like=True)
+
+        def unlike():
+            apis.track.SetLikeTrack(track.id, like=False)
+
+        if track.liked:
+            self.likes.append(track.id)
+            self.data[self.cursor_row][0] = ":sparkling_heart:"
+            thread = like
+        else:
+            self.likes.remove(track.id)
+            self.data[self.cursor_row][0] = ""
+            thread = unlike
+
+        self.refresh_cell(self.cursor_row, 0)
+        self._clear_caches()
+        loop.run_in_executor(None, thread)

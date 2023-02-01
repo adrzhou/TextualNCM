@@ -12,7 +12,7 @@ class Downloader:
 
     def submit(self, track: Track):
         if not track.local:
-            self.executor.submit(download, track)
+            return self.executor.submit(download, track)
 
 
 def download(track: Track):

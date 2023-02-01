@@ -35,7 +35,12 @@ class NeteaseCloudMusic(App):
     def action_download(self):
         table: TrackTable = self.query_one(DataTable)
         track = table.tracks[table.cursor_row]
-        self.downloader.submit(track)
+
+        def done(_):
+            table.locals.append(track.id)
+
+        future = self.downloader.submit(track)
+        future.add_done_callback(done)
         table.watchlist.add(track)
 
     def action_like(self):
@@ -80,11 +85,11 @@ class NeteaseCloudMusic(App):
         player.set_playlist(message.tracks)
 
 
-if __name__ == '__main__':
-    login()
-    server = Process(target=proxy.run)
-    server.start()
-    app = NeteaseCloudMusic()
-    app.run()
-    server.terminate()
-    server.join()
+# if __name__ == '__main__':
+login()
+server = Process(target=proxy.run)
+server.start()
+app = NeteaseCloudMusic()
+app.run()
+server.terminate()
+server.join()
