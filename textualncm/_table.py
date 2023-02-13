@@ -43,14 +43,16 @@ class TrackTable(DataTable):
         for track in self.tracks:
             row = []
 
-            track.liked = track.id in self.likes
+            if track.liked is None:
+                track.liked = track.id in self.likes
             if track.liked:
                 row.append(":sparkling_heart:")
             else:
                 row.append('')
             row.extend([track.name, track.artists, track.album])
 
-            track.local = track.id in self.locals
+            if track.local is None:
+                track.local = track.id in self.locals
             if track.local:
                 row.append(':white_heavy_check_mark:')
             else:
