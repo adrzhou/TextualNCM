@@ -11,6 +11,7 @@ from functools import cached_property
 
 class TrackTable(DataTable):
     tracks: list[Track] = []
+    likes: list[Track] = []
     watchlist: set[Track] = set()
 
     BINDINGS = [
@@ -31,20 +32,17 @@ class TrackTable(DataTable):
         self.set_interval(1, self.update_progress)
 
     @cached_property
-    def likes(self) -> list[int]:
-        return apis.user.GetUserLikeList()['ids']
-
-    @cached_property
     def locals(self) -> list[int]:
         return [int(path.stem) for path in Path().joinpath('downloads').iterdir()]
 
     def update(self):
         self.clear()
+
         for track in self.tracks:
             row = []
 
             if track.liked is None:
-                track.liked = track.id in self.likes
+                track.liked = track in self.likes
             if track.liked:
                 row.append(":sparkling_heart:")
             else:
@@ -108,11 +106,11 @@ class TrackTable(DataTable):
             apis.track.SetLikeTrack(track.id, like=False)
 
         if track.liked:
-            self.likes.append(track.id)
+            self.likes.insert(0, track)
             self.data[self.cursor_row][0] = ":sparkling_heart:"
             thread = like
         else:
-            self.likes.remove(track.id)
+            self.likes.remove(track)
             self.data[self.cursor_row][0] = ""
             thread = unlike
 

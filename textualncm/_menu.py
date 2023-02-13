@@ -89,6 +89,12 @@ class MenuTree(Tree):
         self.add_menu(PlaylistMenu()).next()
         self.action_select_cursor()
 
+        playlist_menu: MenuNode = self.root.children[2]
+        liked_node = playlist_menu.children[0]
+        liked = playlist_menu.get_tracks(liked_node.data)
+        message = self.Likes(self, liked)
+        self.emit_no_wait(message)
+
     def add_menu(self, node: MenuNode):
         node._tree = self
         node._parent = self.root
@@ -118,6 +124,11 @@ class MenuTree(Tree):
     class UpdateTable(Message):
         """Update track table message"""
 
+        def __init__(self, sender: MessageTarget, tracks: list):
+            self.tracks = tracks
+            super().__init__(sender)
+
+    class Likes(Message):
         def __init__(self, sender: MessageTarget, tracks: list):
             self.tracks = tracks
             super().__init__(sender)

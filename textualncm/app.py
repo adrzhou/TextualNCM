@@ -84,6 +84,10 @@ class NeteaseCloudMusic(App):
         player.play(message.track)
         player.set_playlist(message.tracks)
 
+    def on_menu_tree_likes(self, message: MenuTree.Likes):
+        table: TrackTable = self.query_one(TrackTable)
+        table.likes = message.tracks
+
 
 # if __name__ == '__main__':
 login()
