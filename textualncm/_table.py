@@ -94,26 +94,45 @@ class TrackTable(DataTable):
         message = self.Play(self, track, self.tracks)
         self.emit_no_wait(message)
 
-    def action_like(self):
+    class Liked(Message):
+        """Notify the app that a track has been liked/unliked"""
+
+        def __init__(self, sender: MessageTarget, track: Track):
+            self.track = track
+            super().__init__(sender)
+
+    def like(self, track: Track):
         loop = asyncio.get_event_loop()
-        track = self.tracks[self.cursor_row]
         track.liked = not track.liked
 
-        def like():
+        def _like():
             apis.track.SetLikeTrack(track.id, like=True)
 
-        def unlike():
+        def _unlike():
             apis.track.SetLikeTrack(track.id, like=False)
+
+        try:
+            row_idx = self.tracks.index(track)
+            self.data[row_idx][0] = ":sparkling_heart:" if track.liked else ""
+            self.refresh_cell(row_idx, 0)
+            self._clear_caches()
+        except ValueError:
+            pass
 
         if track.liked:
             self.likes.insert(0, track)
-            self.data[self.cursor_row][0] = ":sparkling_heart:"
-            thread = like
+            thread = _like
         else:
             self.likes.remove(track)
-            self.data[self.cursor_row][0] = ""
-            thread = unlike
+            thread = _unlike
 
-        self.refresh_cell(self.cursor_row, 0)
-        self._clear_caches()
+        if self.tracks is self.likes:
+            self.update()
+
+        message = self.Liked(self, track)
+        self.emit_no_wait(message)
         loop.run_in_executor(None, thread)
+
+    def action_like(self):
+        track = self.tracks[self.cursor_row]
+        self.like(track)

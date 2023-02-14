@@ -21,7 +21,8 @@ class NeteaseCloudMusic(App):
         Binding('m', 'mode', 'Toggle Mode', show=False),
         Binding('space', 'pause', 'Play/Pause', show=False),
         Binding('left_square_bracket', 'prev', 'Prev', show=False),
-        Binding('right_square_bracket', 'next', 'Next', show=False)
+        Binding('right_square_bracket', 'next', 'Next', show=False),
+        Binding('ctrl+f', 'like', 'Like/Unlike', show=False)
     ]
     downloader = Downloader()
 
@@ -44,15 +45,10 @@ class NeteaseCloudMusic(App):
         table.watchlist.add(track)
 
     def action_like(self):
+        player: Player = self.query_one(Player)
         table: TrackTable = self.query_one(DataTable)
-        track = table.tracks[table.cursor_row]
-        track.liked = not track.liked
-        if track.liked:
-            table.data[table.cursor_row][0] = ":sparkling_heart:"
-        else:
-            table.data[table.cursor_row][0] = ""
-        table.refresh_cell(table.cursor_row, 0)
-        table._clear_caches()  # noqa
+        track = player.track
+        table.like(track)
 
     def action_quit(self):
         self.downloader.shutdown()
@@ -79,14 +75,19 @@ class NeteaseCloudMusic(App):
         table.tracks = message.tracks
         table.update()
 
+    def on_menu_tree_likes(self, message: MenuTree.Likes):
+        table: TrackTable = self.query_one(TrackTable)
+        table.likes = message.tracks
+
     def on_track_table_play(self, message: TrackTable.Play):
         player: Player = self.query_one(Player)
         player.play(message.track)
         player.set_playlist(message.tracks)
 
-    def on_menu_tree_likes(self, message: MenuTree.Likes):
-        table: TrackTable = self.query_one(TrackTable)
-        table.likes = message.tracks
+    def on_track_table_liked(self, message: TrackTable.Liked):
+        player: Player = self.query_one(Player)
+        if player.track is message.track:
+            player.refresh()
 
 
 # if __name__ == '__main__':
