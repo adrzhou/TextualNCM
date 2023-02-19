@@ -24,11 +24,11 @@ class TrackTable(DataTable):
     ]
 
     def on_mount(self):
-        self.add_column('Liked')
-        self.add_column('Track', width=40)
-        self.add_column('Artist', width=30)
-        self.add_column('Album', width=30)
-        self.add_column('Local', width=30)
+        self.add_column('Liked', key='liked')
+        self.add_column('Track', width=40, key='track')
+        self.add_column('Artist', width=30, key='artist')
+        self.add_column('Album', width=30, key='album')
+        self.add_column('Local', width=30, key='local')
         self.set_interval(1, self.update_progress)
 
     @cached_property
@@ -55,23 +55,18 @@ class TrackTable(DataTable):
                 row.append(':white_heavy_check_mark:')
             else:
                 row.append('')
-            self.add_row(*row)
+            self.add_row(*row, key=str(track.id))
 
         self.refresh()
 
     def update_progress(self):
         for track in tuple(self.watchlist):
-            try:
-                row = self.tracks.index(track)
-            except ValueError:
-                continue
             if track.local:
                 self.watchlist.remove(track)
-                self.data[row][-1] = ':white_heavy_check_mark:'
-            else:
-                self.data[row][-1] = track.progress
-            self.refresh_cell(row, 4)
-            self._clear_caches()
+                if track in self.tracks:
+                    self.update_cell(str(track.id), 'local', ':white_heavy_check_mark:')
+            elif track in self.tracks:
+                self.update_cell(str(track.id), 'local', track.progress)
 
     def _on_blur(self, event: events.Blur) -> None:
         super()._on_blur(event)
@@ -92,7 +87,7 @@ class TrackTable(DataTable):
     def action_play(self):
         track = self.tracks[self.cursor_row]
         message = self.Play(self, track, self.tracks)
-        self.emit_no_wait(message)
+        self.post_message_no_wait(message)
 
     class Liked(Message):
         """Notify the app that a track has been liked/unliked"""
@@ -111,13 +106,11 @@ class TrackTable(DataTable):
         def _unlike():
             apis.track.SetLikeTrack(track.id, like=False)
 
-        try:
-            row_idx = self.tracks.index(track)
-            self.data[row_idx][0] = ":sparkling_heart:" if track.liked else ""
-            self.refresh_cell(row_idx, 0)
-            self._clear_caches()
-        except ValueError:
-            pass
+        if track in self.tracks:
+            if track.liked:
+                self.update_cell(str(track.id), 'liked', ":sparkling_heart:")
+            else:
+                self.update_cell(str(track.id), 'liked', '')
 
         if track.liked:
             self.likes.insert(0, track)
@@ -130,7 +123,7 @@ class TrackTable(DataTable):
             self.update()
 
         message = self.Liked(self, track)
-        self.emit_no_wait(message)
+        self.post_message_no_wait(message)
         loop.run_in_executor(None, thread)
 
     def action_like(self):

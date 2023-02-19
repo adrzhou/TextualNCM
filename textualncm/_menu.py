@@ -1,7 +1,8 @@
 from pyncm import apis
 from functools import cache
 from _track import Track
-from textual.widgets import Tree, TreeNode
+from textual.widgets import Tree
+from textual.widgets.tree import TreeNode
 from textual.message import Message, MessageTarget
 from textual.binding import Binding
 
@@ -93,14 +94,14 @@ class MenuTree(Tree):
         liked_node = playlist_menu.children[0]
         liked = playlist_menu.get_tracks(liked_node.data)
         message = self.Likes(self, liked)
-        self.emit_no_wait(message)
+        self.post_message_no_wait(message)
 
     def add_menu(self, node: MenuNode):
         node._tree = self
         node._parent = self.root
         node._id = self._new_id()
         node._label = self.process_label(node.label)
-        self._nodes[node.id] = node
+        self._tree_nodes[node.id] = node
         self._updates += 1
         self.root._updates += 1  # noqa
         self.root._children.append(node)  # noqa
@@ -119,7 +120,7 @@ class MenuTree(Tree):
         elif cursor.data:
             tracks = menu.get_tracks(cursor.data)
             message = self.UpdateTable(self, tracks)
-            self.emit_no_wait(message)
+            self.post_message_no_wait(message)
 
     class UpdateTable(Message):
         """Update track table message"""

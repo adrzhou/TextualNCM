@@ -19,7 +19,7 @@ class NeteaseCloudMusic(App):
         Binding('d', 'download', 'Download'),
         Binding('q', 'quit', 'Quit'),
         Binding('m', 'mode', 'Toggle Mode', show=False),
-        Binding('space', 'pause', 'Play/Pause', show=False),
+        Binding('space', 'pause', 'Play/Pause', show=False, priority=True),
         Binding('left_square_bracket', 'prev', 'Prev', show=False),
         Binding('right_square_bracket', 'next', 'Next', show=False),
         Binding('ctrl+f', 'like', 'Like/Unlike', show=False)
@@ -55,6 +55,7 @@ class NeteaseCloudMusic(App):
         self.exit()
 
     def action_pause(self):
+        print('action triggered')
         player: Player = self.query_one(Player)
         player.pause()
 
