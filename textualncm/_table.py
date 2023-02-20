@@ -1,12 +1,12 @@
 import asyncio
 from pyncm import apis
 from _track import Track
-from pathlib import Path
 from textual import events
 from textual.widgets import DataTable
+from textual.widgets.data_table import CellDoesNotExist
 from textual.binding import Binding
 from textual.message import Message, MessageTarget
-from functools import cached_property
+from pathlib import Path
 
 
 class TrackTable(DataTable):
@@ -20,7 +20,8 @@ class TrackTable(DataTable):
         Binding("h", "cursor_left", "Cursor Left", show=False),
         Binding("l", "cursor_right", "Cursor Right", show=False),
         Binding("p", "play", "Play"),
-        Binding("f", "like", "Like/Unlike")
+        Binding("f", "like", "Like/Unlike"),
+        Binding("d", "download", "Download/Delete")
     ]
 
     def on_mount(self):
@@ -30,10 +31,6 @@ class TrackTable(DataTable):
         self.add_column('Album', width=30, key='album')
         self.add_column('Local', width=30, key='local')
         self.set_interval(1, self.update_progress)
-
-    @cached_property
-    def locals(self) -> list[int]:
-        return [int(path.stem) for path in Path().joinpath('downloads').iterdir()]
 
     def update(self):
         self.clear()
@@ -49,12 +46,10 @@ class TrackTable(DataTable):
                 row.append('')
             row.extend([track.name, track.artists, track.album])
 
-            if track.local is None:
-                track.local = track.id in self.locals
             if track.local:
                 row.append(':white_heavy_check_mark:')
             else:
-                row.append('')
+                row.append(track.progress)
             self.add_row(*row, key=str(track.id))
 
         self.refresh()
@@ -63,10 +58,22 @@ class TrackTable(DataTable):
         for track in tuple(self.watchlist):
             if track.local:
                 self.watchlist.remove(track)
-                if track in self.tracks:
-                    self.update_cell(str(track.id), 'local', ':white_heavy_check_mark:')
-            elif track in self.tracks:
+            try:
                 self.update_cell(str(track.id), 'local', track.progress)
+            except CellDoesNotExist:
+                pass
+
+    def unlocal(self, track: Track):
+        """Called when the local file of a track is deleted"""
+        try:
+            self.watchlist.remove(track)
+        except KeyError:
+            pass
+
+        try:
+            self.update_cell(str(track.id), 'local', '')
+        except CellDoesNotExist:
+            pass
 
     def _on_blur(self, event: events.Blur) -> None:
         super()._on_blur(event)
@@ -129,3 +136,22 @@ class TrackTable(DataTable):
     def action_like(self):
         track = self.tracks[self.cursor_row]
         self.like(track)
+
+    class Download(Message):
+        """Tell the app to download a track from the track table"""
+
+        def __init__(self, sender: MessageTarget, track: Track):
+            self.track = track
+            super().__init__(sender)
+
+    def action_download(self):
+        track = self.tracks[self.cursor_row]
+
+        if track.local:
+            Path().joinpath('downloads', f'{track.id}.mp3').unlink()
+            track.local = False
+            self.unlocal(track)
+        else:
+            self.watchlist.add(track)
+            message = self.Download(self, track)
+            self.post_message_no_wait(message)

@@ -116,15 +116,13 @@ class Player(Widget):
             self.time = self.player.get_time()
 
     def watch_time(self, time: int):
+        track = self.track
         with self.progress as progress:
             elapsed = str(timedelta(seconds=round(time / 1000)))[2:]
-            if self.track.local:
-                length = str(timedelta(seconds=round(self.player.get_length() / 1000)))[2:]
-                progress.update(self.bar, elapsed=elapsed, length=length, total=self.player.get_length(),
-                                completed=time)
-            else:
-                length = str(timedelta(seconds=round(self.track.length / 1000)))[2:]
-                progress.update(self.bar, elapsed=elapsed, length=length, total=self.track.length, completed=time)
+            if track.local and not track.length:
+                track.length = self.player.get_length()
+            length = str(timedelta(seconds=round(track.length / 1000)))[2:]
+            progress.update(self.bar, elapsed=elapsed, length=length, total=track.length, completed=time)
 
     def end_reached(self, event):
         _ = event

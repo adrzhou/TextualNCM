@@ -11,11 +11,13 @@ class Downloader:
         self.executor.shutdown(wait=True)
 
     def submit(self, track: Track):
-        if not track.local:
-            return self.executor.submit(download, track)
+        if track.downloading:
+            return
+        self.executor.submit(download, track)
 
 
 def download(track: Track):
+    track.downloading = True
     track_id = [track.id]
     audio = apis.track.GetTrackAudioV1(track_id, level='exhigh')
     audio = audio.get("data", [{"url": ""}])[0]
@@ -29,3 +31,4 @@ def download(track: Track):
             fp.write(chunk)
             track.xfered += len(chunk)
     track.local = True
+    track.downloading = False
