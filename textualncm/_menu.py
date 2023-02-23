@@ -93,6 +93,8 @@ class MenuTree(Tree):
         playlist_menu: MenuNode = self.root.children[2]
         liked_node = playlist_menu.children[0]
         liked = playlist_menu.get_tracks(liked_node.data)
+        for track in liked:
+            track.liked = True
         message = self.Likes(self, liked)
         self.post_message_no_wait(message)
 

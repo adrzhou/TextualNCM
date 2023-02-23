@@ -4,6 +4,7 @@ from rich.progress import Progress, BarColumn
 
 
 class Track:
+    _initialized = False
     _registry = WeakValueDictionary()
 
     # The '_locals' variable does not need to be updated during runtime
@@ -11,19 +12,24 @@ class Track:
     _locals = [int(path.stem) for path in Path().joinpath('downloads').iterdir()]
 
     def __init__(self, name, _id, artists, album, album_id):
+        # Prevent initialization on created instance
+        if self._initialized:
+            return
+
         self.name: str = name
         self.id: int = _id
         self.artists: str = artists
         self.album: str = album
         self.album_id: int = album_id
         self.local: bool = _id in self._locals
-        self.liked: bool | None = None
+        self.liked: bool = False
         self.downloading: bool = False
         self.length: int = 0
         self.size: int = 0
         self.xfered: int = 0
         self._progress: Progress = Progress(BarColumn(), auto_refresh=False)
         self.task = self._progress.add_task('', total=None)
+        self._initialized = True
 
     def __new__(cls, name, _id, artists, album, album_id):
         if _id in cls._registry:

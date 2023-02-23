@@ -38,8 +38,6 @@ class TrackTable(DataTable):
         for track in self.tracks:
             row = []
 
-            if track.liked is None:
-                track.liked = track in self.likes
             if track.liked:
                 row.append(":sparkling_heart:")
             else:
