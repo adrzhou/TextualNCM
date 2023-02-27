@@ -23,7 +23,8 @@ class TrackTable(DataTable):
         Binding("l", "cursor_right", "Cursor Right", show=False),
         Binding("p", "play", "Play"),
         Binding("f", "like", "Like/Unlike"),
-        Binding("d", "download", "Download/Delete")
+        Binding("d", "download", "Download/Delete"),
+        Binding("s", "subset", "Subset")
     ]
 
     def on_mount(self):
@@ -181,3 +182,19 @@ class TrackTable(DataTable):
         elif col_key == 'local':
             self.action_download()
 
+    def action_subset(self) -> None:
+        cursor_keys = self.coordinate_to_cell_key(self.cursor_coordinate)
+        col_key = cursor_keys.column_key
+        cursor_track = self.tracks[self.cursor_row]
+        if col_key == 'liked':
+            self.tracks = [track for track in self.tracks if track.liked]
+        elif col_key == 'artist':
+            # TODO
+            pass
+        elif col_key == 'album':
+            self.tracks = [track for track in self.tracks if track.album_id == cursor_track.album_id]
+        elif col_key == 'local':
+            self.tracks = [track for track in self.tracks if track.local]
+        else:
+            return
+        self.update()
