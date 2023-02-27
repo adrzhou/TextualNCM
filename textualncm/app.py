@@ -20,6 +20,7 @@ class NeteaseCloudMusic(App):
         Binding('d', 'download', 'Download'),
         Binding('q', 'quit', 'Quit'),
         Binding('m', 'mode', 'Toggle Mode', show=False),
+        Binding('g', 'current', 'Current', show=False),
         Binding('space', 'pause', 'Play/Pause', show=False, priority=True),
         Binding('left_square_bracket', 'prev', 'Prev', show=False),
         Binding('right_square_bracket', 'next', 'Next', show=False),
@@ -68,6 +69,14 @@ class NeteaseCloudMusic(App):
     def action_mode(self):
         player: Player = self.query_one(Player)
         player.toggle_mode()
+
+    def action_current(self):
+        player: Player = self.query_one(Player)
+        table: TrackTable = self.query_one(TrackTable)
+        if player.playlist:
+            table.tracks = player.playlist
+            table.update()
+            table.scroll_to_track(player.track)
 
     def action_prev(self):
         player: Player = self.query_one(Player)

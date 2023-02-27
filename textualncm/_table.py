@@ -4,6 +4,7 @@ from _track import Track
 from textual import events
 from textual.widgets import DataTable
 from textual.widgets.data_table import CellDoesNotExist
+from textual.coordinate import Coordinate
 from textual.binding import Binding
 from textual.message import Message, MessageTarget
 from pathlib import Path
@@ -153,3 +154,10 @@ class TrackTable(DataTable):
             self.watchlist.add(track)
             message = self.Download(self, track)
             self.post_message_no_wait(message)
+
+    def scroll_to_track(self, track: Track) -> None:
+        row = self.tracks.index(track)
+        column = 0
+        self.cursor_coordinate: Coordinate = Coordinate(row, column)
+        self.focus()
+        self._scroll_cursor_into_view()
