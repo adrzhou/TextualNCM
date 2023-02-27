@@ -1,6 +1,7 @@
 import asyncio
 from pyncm import apis
 from _track import Track
+from _menu import AlbumMenu
 from textual import events
 from textual.widgets import DataTable
 from textual.widgets.data_table import CellDoesNotExist
@@ -161,3 +162,22 @@ class TrackTable(DataTable):
         self.cursor_coordinate: Coordinate = Coordinate(row, column)
         self.focus()
         self._scroll_cursor_into_view()
+
+    def action_select_cursor(self) -> None:
+        super().action_select_cursor()
+        cursor_keys = self.coordinate_to_cell_key(self.cursor_coordinate)
+        col_key = cursor_keys.column_key
+        if col_key == 'liked':
+            self.action_like()
+        elif col_key == 'track':
+            self.action_play()
+        elif col_key == 'artist':
+            # TODO
+            pass
+        elif col_key == 'album':
+            track = self.tracks[self.cursor_row]
+            self.tracks = AlbumMenu.get_tracks(str(track.album_id))
+            self.update()
+        elif col_key == 'local':
+            self.action_download()
+

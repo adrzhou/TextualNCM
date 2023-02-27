@@ -19,11 +19,13 @@ class MenuNode(TreeNode):
         self._updates: int = 0
         self._line: int = -1
 
-    def request(self, page: int) -> tuple[bool, list]:
+    @staticmethod
+    def request(page: int) -> tuple[bool, list]:
         # Abstract method: Requests data from API for children nodes
         pass
 
-    def get_tracks(self, entry_id: str) -> list[Track]:
+    @staticmethod
+    def get_tracks(entry_id: str) -> list[Track]:
         # Abstract method: Requests track list from API for track table
         pass
 
@@ -179,16 +181,18 @@ class ArtistMenu(MenuNode):
         super().__init__()
         self._label = '关注的艺人'
 
+    @staticmethod
     @cache
-    def request(self, page):
+    def request(page):
         offset = page * 7
         payload = apis.user.GetUserArtistSubs(7, offset)
         has_more = payload['hasMore']
         data = [(artist['name'], artist['id']) for artist in payload['data']]
         return has_more, data
 
+    @staticmethod
     @cache
-    def get_tracks(self, artist_id: str):
+    def get_tracks(artist_id: str):
         payload = apis.user.GetArtistTopSongs(artist_id)['songs']
         tracks = []
         for track in payload:
@@ -206,16 +210,18 @@ class AlbumMenu(MenuNode):
         super().__init__()
         self._label = '收藏的专辑'
 
+    @staticmethod
     @cache
-    def request(self, page):
+    def request(page):
         offset = page * 7
         payload = apis.user.GetUserAlbumSubs(7, offset)
         has_more = payload['hasMore']
         data = [(artist['name'], artist['id']) for artist in payload['data']]
         return has_more, data
 
+    @staticmethod
     @cache
-    def get_tracks(self, album_id: str) -> list:
+    def get_tracks(album_id: str) -> list:
         payload = apis.album.GetAlbumInfo(album_id)['songs']
         tracks = []
         for track in payload:
@@ -233,7 +239,8 @@ class PlaylistMenu(MenuNode):
         super().__init__()
         self._label = '创建的歌单'
 
-    def request(self, page=0):
+    @staticmethod
+    def request(page=0):
         payload = apis.user.GetUserPlaylists()['playlist']
         data = [(pl['name'], pl['id']) for pl in payload]
         return False, data
@@ -243,8 +250,9 @@ class PlaylistMenu(MenuNode):
         for item in data:
             self.add_leaf(*item)
 
+    @staticmethod
     @cache
-    def get_tracks(self, playlist: str) -> list:
+    def get_tracks(playlist: str) -> list:
         payload = apis.playlist.GetPlaylistInfo(playlist)['playlist']['tracks']
         tracks = []
         for track in payload:
