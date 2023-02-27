@@ -38,13 +38,15 @@ class NeteaseCloudMusic(App):
     def action_like(self):
         player: Player = self.query_one(Player)
         table: TrackTable = self.query_one(DataTable)
-        track = player.track
-        table.like(track)
+        if track := player.track:
+            table.like(track)
 
     def action_download(self):
         player: Player = self.query_one(Player)
         table: TrackTable = self.query_one(TrackTable)
         track = player.track
+        if not track:
+            return
 
         # If track is already local, delete its file
         if track.local:

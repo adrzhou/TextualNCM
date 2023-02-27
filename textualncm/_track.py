@@ -58,3 +58,6 @@ class Track:
         local: bool = False
         liked: bool = False
         length: int = 0
+
+        def __bool__(self):
+            return False
