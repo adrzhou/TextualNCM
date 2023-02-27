@@ -82,6 +82,8 @@ class MenuTree(Tree):
     BINDINGS = [
         Binding("k", "cursor_up", "Cursor Up", show=False),
         Binding("j", "cursor_down", "Cursor Down", show=False),
+        Binding("p", "play", "Play"),
+        Binding("d", "download", "Download")
     ]
 
     def on_mount(self):
@@ -133,6 +135,40 @@ class MenuTree(Tree):
 
     class Likes(Message):
         def __init__(self, sender: MessageTarget, tracks: list):
+            self.tracks = tracks
+            super().__init__(sender)
+
+    def action_play(self):
+        cursor: TreeNode = self.cursor_node
+        menu = cursor.parent
+        if menu.data in ('next', 'prev'):
+            return
+        if cursor.data:
+            tracks = menu.get_tracks(cursor.data)
+            message = self.Play(self, tracks)
+            self.post_message_no_wait(message)
+
+    class Play(Message):
+        """Tell the app to play a playlist"""
+
+        def __init__(self, sender: MessageTarget, tracks: list[Track]):
+            self.tracks = tracks
+            super().__init__(sender)
+
+    def action_download(self):
+        cursor: TreeNode = self.cursor_node
+        menu = cursor.parent
+        if menu.data in ('next', 'prev'):
+            return
+        if cursor.data:
+            tracks = menu.get_tracks(cursor.data)
+            message = self.Download(self, tracks)
+            self.post_message_no_wait(message)
+
+    class Download(Message):
+        """Tell the app to download a playlist"""
+
+        def __init__(self, sender: MessageTarget, tracks: list[Track]):
             self.tracks = tracks
             super().__init__(sender)
 

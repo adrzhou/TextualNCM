@@ -95,6 +95,18 @@ class NeteaseCloudMusic(App):
         table: TrackTable = self.query_one(TrackTable)
         table.likes = message.tracks
 
+    def on_menu_tree_play(self, message: MenuTree.Play):
+        player: Player = self.query_one(Player)
+        if message.tracks:
+            player.play_playlist(message.tracks)
+
+    def on_menu_tree_download(self, message: MenuTree.Download):
+        table: TrackTable = self.query_one(TrackTable)
+        for track in message.tracks:
+            if not track.local:
+                table.watchlist.add(track)
+                self.downloader.submit(track)
+
     def on_track_table_play(self, message: TrackTable.Play):
         player: Player = self.query_one(Player)
         player.play(message.track)

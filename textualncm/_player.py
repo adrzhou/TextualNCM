@@ -88,6 +88,15 @@ class Player(Widget):
         self.playlist = playlist
         self.index = playlist.index(self.track)
 
+    def play_playlist(self, playlist: list[Track]):
+        self.playlist = playlist
+        if self.mode == 'shuffle':
+            self.index = randint(0, len(self.playlist))
+        else:
+            self.index = 0
+        track = self.playlist[self.index]
+        self.play(track)
+
     def prev(self):
         if self.playlist:
             self.index = (self.index - 1) % len(self.playlist)
