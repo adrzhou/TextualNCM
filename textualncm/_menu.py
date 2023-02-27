@@ -112,8 +112,9 @@ class MenuTree(Tree):
         self._invalidate()
         return node
 
-    def on_tree_node_selected(self, message: Tree.NodeSelected):
-        cursor = message.node
+    def action_select_cursor(self):
+        super().action_select_cursor()
+        cursor = self.cursor_node
         menu = cursor.parent
         if cursor.data == 'next':
             menu.next()
