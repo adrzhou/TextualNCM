@@ -1,8 +1,12 @@
 Screen {
     layout: grid;
-    grid-size: 2 2;
+    grid-size: 2 3;
     grid-columns: 1fr 2fr;
-    grid-rows: 85% 15%;
+    grid-rows: 10% 75% 15%;
+}
+
+#tree {
+    row-span: 2;
 }
 
 #table {

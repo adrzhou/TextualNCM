@@ -6,7 +6,7 @@ from _player import Player
 from _proxy import app as proxy
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.widgets import Header, Footer, DataTable
+from textual.widgets import Header, Footer, DataTable, Input
 from pathlib import Path
 from multiprocessing import Process
 
@@ -21,7 +21,7 @@ class NeteaseCloudMusic(App):
         Binding('q', 'quit', 'Quit'),
         Binding('m', 'mode', 'Toggle Mode', show=False),
         Binding('g', 'current', 'Current', show=False),
-        Binding('space', 'pause', 'Play/Pause', show=False, priority=True),
+        Binding('space', 'pause', 'Play/Pause', show=False),
         Binding('left_square_bracket', 'prev', 'Prev', show=False),
         Binding('right_square_bracket', 'next', 'Next', show=False),
         Binding('ctrl+f', 'like', 'Like/Unlike', show=False),
@@ -31,7 +31,8 @@ class NeteaseCloudMusic(App):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield MenuTree('我的', )
+        yield MenuTree(label='我的', id='tree')
+        yield Input(id='searchbar', placeholder='搜索')
         yield TrackTable(id='table')
         yield Player(id='player')
         yield Footer()

@@ -85,7 +85,8 @@ class MenuTree(Tree):
         Binding("k", "cursor_up", "Cursor Up", show=False),
         Binding("j", "cursor_down", "Cursor Down", show=False),
         Binding("p", "play", "Play"),
-        Binding("d", "download", "Download")
+        Binding("d", "download", "Download"),
+        Binding('space', 'space', 'Space')  # Override default binding
     ]
 
     def on_mount(self):
@@ -174,6 +175,9 @@ class MenuTree(Tree):
         def __init__(self, sender: MessageTarget, tracks: list[Track]):
             self.tracks = tracks
             super().__init__(sender)
+
+    def action_space(self):
+        self.app.action_pause()
 
 
 class ArtistMenu(MenuNode):
