@@ -75,24 +75,24 @@ class Search(Input):
     @staticmethod
     def search_song(payload: dict):
         tracks = []
-        for track in payload['result']['songs']:
-            name = track['name']
-            track_id = track['id']
-            artists = ', '.join([artist['name'] for artist in track['ar']])
-            album = track['al']['name']
-            album_id = track['al']['id']
+        for tr in payload['result']['songs']:
+            name = tr['name']
+            track_id = tr['id']
+            artists = ', '.join([artist['name'] for artist in tr['ar']])
+            album = tr['al']['name']
+            album_id = tr['al']['id']
             tracks.append(Track(name, track_id, artists, album, album_id))
         return tracks
 
     @staticmethod
     def search_album(payload: dict):
         albums = []
-        for album in payload['result']['albums']:
-            name = album['name']
-            album_id = album['id']
-            artist = album['artist']['name']
-            release = date.fromtimestamp(album['publishTime'] / 1000).isoformat()
-            number = album['size']
+        for al in payload['result']['albums']:
+            name = al['name']
+            album_id = al['id']
+            artist = al['artist']['name']
+            release = date.fromtimestamp(al['publishTime'] / 1000).isoformat()
+            number = al['size']
             albums.append(
                 {'name': name,
                  'album_id': album_id,
@@ -106,9 +106,9 @@ class Search(Input):
     @staticmethod
     def search_artist(payload: dict):
         artists = []
-        for artist in payload['result']['artists']:
-            name = artist['name']
-            artist_id = artist['id']
+        for ar in payload['result']['artists']:
+            name = ar['name']
+            artist_id = ar['id']
             artists.append({'name': name, 'artist_id': artist_id})
         return artists
 
@@ -118,7 +118,7 @@ class Search(Input):
         for pl in payload['result']['playlists']:
             name = pl['name']
             playlist_id = pl['id']
-            curator = pl['creator']
+            curator = pl['creator']['nickname']
             count = pl['trackCount']
             playlists.append(
                 {'name': name,

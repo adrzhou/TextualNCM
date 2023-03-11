@@ -1,7 +1,7 @@
 import asyncio
 from pyncm import apis
 from _track import Track
-from _menu import AlbumMenu
+from _menu import AlbumMenu, ArtistMenu, PlaylistMenu
 from textual import events
 from textual.app import ComposeResult
 from textual.widgets import DataTable
@@ -28,6 +28,11 @@ class TableMixin(DataTable):
     def _on_focus(self, event: events.Focus) -> None:
         super()._on_focus(event)
         self.show_cursor = True
+
+    class ShowTracks(Message):
+        def __init__(self, sender: MessageTarget, tracks: list[Track]):
+            self.tracks = tracks
+            super().__init__(sender)
 
 
 class TrackTable(TableMixin, DataTable):
@@ -210,7 +215,7 @@ class AlbumTable(TableMixin, DataTable):
 
     def on_mount(self):
         self.display = False
-        self.add_column('专辑', width=30, key='name')
+        self.add_column('专辑', width=30, key='album')
         self.add_column('创作者', width=30, key='artist')
         self.add_column('发行日期', width=30, key='release')
         self.add_column('曲目', key='count')
@@ -219,6 +224,19 @@ class AlbumTable(TableMixin, DataTable):
         self.clear()
         for album in self.albums:
             self.add_row(album['name'], album['artist'], album['release'], album['number'])
+
+    def action_select_cursor(self) -> None:
+        super().action_select_cursor()
+        cursor_keys = self.coordinate_to_cell_key(self.cursor_coordinate)
+        col_key = cursor_keys.column_key
+        if col_key == 'album':
+            album = self.albums[self.cursor_row]
+            tracks = AlbumMenu.get_tracks(album['album_id'])
+            message = self.ShowTracks(self, tracks)
+            self.post_message_no_wait(message)
+        elif col_key == 'artist':
+            # TODO
+            pass
 
 
 class ArtistTable(TableMixin, DataTable):
@@ -232,6 +250,13 @@ class ArtistTable(TableMixin, DataTable):
         self.clear()
         for artist in self.artists:
             self.add_row(artist['name'])
+
+    def action_select_cursor(self) -> None:
+        super().action_select_cursor()
+        artist_id = self.artists[self.cursor_row]['artist_id']
+        tracks = ArtistMenu.get_tracks(artist_id)
+        message = self.ShowTracks(self, tracks)
+        self.post_message_no_wait(message)
 
 
 class PlaylistTable(TableMixin, DataTable):
@@ -248,6 +273,13 @@ class PlaylistTable(TableMixin, DataTable):
         for pl in self.playlists:
             self.add_row(pl['name'], pl['curator'], pl['count'])
 
+    def action_select_cursor(self) -> None:
+        super().action_select_cursor()
+        plist_id = self.playlists[self.cursor_row]['playlist_id']
+        tracks = PlaylistMenu.get_tracks(plist_id)
+        message = self.ShowTracks(self, tracks)
+        self.post_message_no_wait(message)
+
 
 class Tables(Container):
     def compose(self) -> ComposeResult:
@@ -256,7 +288,7 @@ class Tables(Container):
         yield ArtistTable(id='artists')
         yield PlaylistTable(id='playlists')
 
-    def switch(self, mode: str) -> None:
+    def switch(self, mode: int) -> None:
         for child in self.children:
             child.display = False
         if mode == 1:
@@ -267,3 +299,9 @@ class Tables(Container):
             self.query_one(ArtistTable).display = True
         else:
             self.query_one(PlaylistTable).display = True
+
+    def on_table_mixin_show_tracks(self, message: AlbumTable.ShowTracks):
+        self.switch(1)
+        table = self.query_one(TrackTable)
+        table.tracks = message.tracks
+        table.update()
