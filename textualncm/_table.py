@@ -13,16 +13,29 @@ from textual.containers import Container
 from pathlib import Path
 
 
-class TrackTable(DataTable):
+class TableMixin(DataTable):
+    BINDINGS = [
+        Binding("k", "cursor_up", "Cursor Up", show=False),
+        Binding("j", "cursor_down", "Cursor Down", show=False),
+        Binding("h", "cursor_left", "Cursor Left", show=False),
+        Binding("l", "cursor_right", "Cursor Right", show=False)
+    ]
+
+    def _on_blur(self, event: events.Blur) -> None:
+        super()._on_blur(event)
+        self.show_cursor = False
+
+    def _on_focus(self, event: events.Focus) -> None:
+        super()._on_focus(event)
+        self.show_cursor = True
+
+
+class TrackTable(TableMixin, DataTable):
     tracks: list[Track] = []
     likes: list[Track] = []
     watchlist: set[Track] = set()
 
     BINDINGS = [
-        Binding("k", "cursor_up", "Cursor Up", show=False),
-        Binding("j", "cursor_down", "Cursor Down", show=False),
-        Binding("h", "cursor_left", "Cursor Left", show=False),
-        Binding("l", "cursor_right", "Cursor Right", show=False),
         Binding("p", "play", "Play"),
         Binding("f", "like", "Like/Unlike"),
         Binding("d", "download", "Download/Delete"),
@@ -75,14 +88,6 @@ class TrackTable(DataTable):
             self.update_cell(str(track.id), 'local', '')
         except CellDoesNotExist:
             pass
-
-    def _on_blur(self, event: events.Blur) -> None:
-        super()._on_blur(event)
-        self.show_cursor = False
-
-    def _on_focus(self, event: events.Focus) -> None:
-        super()._on_focus(event)
-        self.show_cursor = True
 
     class Play(Message):
         """Tell the app to play a track from the track table"""
@@ -200,7 +205,7 @@ class TrackTable(DataTable):
         self.update()
 
 
-class AlbumTable(DataTable):
+class AlbumTable(TableMixin, DataTable):
     albums: list = []
 
     def on_mount(self):
@@ -216,7 +221,7 @@ class AlbumTable(DataTable):
             self.add_row(album['name'], album['artist'], album['release'], album['number'])
 
 
-class ArtistTable(DataTable):
+class ArtistTable(TableMixin, DataTable):
     artists = []
 
     def on_mount(self):
@@ -229,7 +234,7 @@ class ArtistTable(DataTable):
             self.add_row(artist['name'])
 
 
-class PlaylistTable(DataTable):
+class PlaylistTable(TableMixin, DataTable):
     playlists = []
 
     def on_mount(self):
