@@ -1,12 +1,13 @@
 from _login import login
 from _menu import MenuTree
-from _table import TrackTable
+from _table import *
 from _downloader import Downloader
 from _player import Player
 from _proxy import app as proxy
+from _search import Search
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.widgets import Header, Footer, DataTable, Input
+from textual.widgets import Header, Footer
 from pathlib import Path
 from multiprocessing import Process
 
@@ -32,14 +33,14 @@ class NeteaseCloudMusic(App):
     def compose(self) -> ComposeResult:
         yield Header()
         yield MenuTree(label='我的', id='tree')
-        yield Input(id='searchbar', placeholder='搜索')
-        yield TrackTable(id='table')
+        yield Search(id='searchbar', placeholder='搜索歌曲')
+        yield Tables(id='tables')
         yield Player(id='player')
         yield Footer()
 
     def action_like(self):
         player: Player = self.query_one(Player)
-        table: TrackTable = self.query_one(DataTable)
+        table: TrackTable = self.query_one(TrackTable)
         if track := player.track:
             table.like(track)
 
@@ -88,7 +89,7 @@ class NeteaseCloudMusic(App):
         player.next()
 
     def on_menu_tree_update_table(self, message: MenuTree.UpdateTable):
-        table: TrackTable = self.query_one(DataTable)
+        table: TrackTable = self.query_one(TrackTable)
         table.tracks = message.tracks
         table.update()
 
@@ -121,6 +122,26 @@ class NeteaseCloudMusic(App):
     def on_track_table_download(self, message: TrackTable.Download):
         track = message.track
         self.downloader.submit(track)
+
+    def on_search_update_table(self, message: Search.UpdateTable):
+        tables = self.query_one(Tables)
+        tables.switch(message.mode)
+
+        if message.mode == 1:
+            table = self.query_one(TrackTable)
+            table.tracks = message.results
+        elif message.mode == 10:
+            table = self.query_one(AlbumTable)
+            table.albums = message.results
+        elif message.mode == 100:
+            table = self.query_one(ArtistTable)
+            table.artists = message.results
+        else:
+            table = self.query_one(PlaylistTable)
+            table.playlists = message.results
+
+        table.update()
+        table.focus()
 
 
 # if __name__ == '__main__':

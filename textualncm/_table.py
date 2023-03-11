@@ -3,11 +3,13 @@ from pyncm import apis
 from _track import Track
 from _menu import AlbumMenu
 from textual import events
+from textual.app import ComposeResult
 from textual.widgets import DataTable
 from textual.widgets.data_table import CellDoesNotExist
 from textual.coordinate import Coordinate
 from textual.binding import Binding
 from textual.message import Message, MessageTarget
+from textual.containers import Container
 from pathlib import Path
 
 
@@ -52,8 +54,6 @@ class TrackTable(DataTable):
             else:
                 row.append(track.progress)
             self.add_row(*row, key=str(track.id))
-
-        self.refresh()
 
     def update_progress(self):
         for track in tuple(self.watchlist):
@@ -198,3 +198,67 @@ class TrackTable(DataTable):
         else:
             return
         self.update()
+
+
+class AlbumTable(DataTable):
+    albums: list = []
+
+    def on_mount(self):
+        self.display = False
+        self.add_column('专辑', width=30, key='name')
+        self.add_column('创作者', width=30, key='artist')
+        self.add_column('发行日期', width=30, key='release')
+        self.add_column('曲目', key='count')
+
+    def update(self) -> None:
+        self.clear()
+        for album in self.albums:
+            self.add_row(album['name'], album['artist'], album['release'], album['number'])
+
+
+class ArtistTable(DataTable):
+    artists = []
+
+    def on_mount(self):
+        self.display = False
+        self.add_column('创作者', width=30, key='artist')
+
+    def update(self) -> None:
+        self.clear()
+        for artist in self.artists:
+            self.add_row(artist['name'])
+
+
+class PlaylistTable(DataTable):
+    playlists = []
+
+    def on_mount(self):
+        self.display = False
+        self.add_column('歌单', width=30, key='playlist')
+        self.add_column('Curator', width=30, key='curator')
+        self.add_column('曲目', key='count')
+
+    def update(self) -> None:
+        self.clear()
+        for pl in self.playlists:
+            self.add_row(pl['name'], pl['curator'], pl['count'])
+
+
+class Tables(Container):
+    def compose(self) -> ComposeResult:
+        yield TrackTable(id='tracks')
+        yield AlbumTable(id='albums')
+        yield ArtistTable(id='artists')
+        yield PlaylistTable(id='playlists')
+
+    def switch(self, mode: str) -> None:
+        for child in self.children:
+            child.display = False
+        if mode == 1:
+            self.query_one(TrackTable).display = True
+        elif mode == 10:
+            self.query_one(AlbumTable).display = True
+        elif mode == 100:
+            self.query_one(ArtistTable).display = True
+        else:
+            self.query_one(PlaylistTable).display = True

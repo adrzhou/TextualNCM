@@ -9,8 +9,9 @@ Screen {
     row-span: 2;
 }
 
-#table {
+#tables {
     row-span: 2;
+    height: 100%
 }
 
 #player {

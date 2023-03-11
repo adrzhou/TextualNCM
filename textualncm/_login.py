@@ -1,9 +1,13 @@
+from pathlib import Path
 from pyncm import apis
 from pyncm import DumpSessionAsString, SetCurrentSession, LoadSessionFromString, GetCurrentSession
 
+package_path = Path(__file__).parent
+save_path = package_path.joinpath('save')
+
 
 def login():
-    with open('save') as fp:
+    with open(save_path) as fp:
         save = fp.read()
 
     def choose():
