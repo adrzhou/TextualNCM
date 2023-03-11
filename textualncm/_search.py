@@ -49,6 +49,8 @@ class Search(Input):
 
     def action_submit(self) -> None:
         super().action_submit()
+        if not self.value:
+            return
         payload = GetSearchResult(self.value, stype=self.mode, limit=50)
         if self.mode == SONG:
             results = self.search_song(payload)
