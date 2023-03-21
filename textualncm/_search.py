@@ -78,7 +78,7 @@ class Search(Input):
         for tr in payload['result']['songs']:
             name = tr['name']
             track_id = tr['id']
-            artists = ', '.join([artist['name'] for artist in tr['ar']])
+            artists = {ar['id']: ar['name'] for ar in tr['ar']}
             album = tr['al']['name']
             album_id = tr['al']['id']
             tracks.append(Track(name, track_id, artists, album, album_id))
@@ -109,7 +109,7 @@ class Search(Input):
         for ar in payload['result']['artists']:
             name = ar['name']
             artist_id = ar['id']
-            artists.append({'name': name, 'artist_id': artist_id})
+            artists.append({'name': name, 'id': artist_id})
         return artists
 
     @staticmethod

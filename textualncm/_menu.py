@@ -191,7 +191,7 @@ class ArtistMenu(MenuNode):
         offset = page * 7
         payload = apis.user.GetUserArtistSubs(7, offset)
         has_more = payload['hasMore']
-        data = [(artist['name'], artist['id']) for artist in payload['data']]
+        data = [(ar['name'], ar['id']) for ar in payload['data']]
         return has_more, data
 
     @staticmethod
@@ -199,12 +199,12 @@ class ArtistMenu(MenuNode):
     def get_tracks(artist_id: str):
         payload = apis.user.GetArtistTopSongs(artist_id)['songs']
         tracks = []
-        for track in payload:
-            name = track['name']
-            track_id = track['id']
-            artists = ', '.join([artist['name'] for artist in track['ar']])
-            album = track['al']['name']
-            album_id = track['al']['id']
+        for tr in payload:
+            name = tr['name']
+            track_id = tr['id']
+            artists = {ar['id']: ar['name'] for ar in tr['ar']}
+            album = tr['al']['name']
+            album_id = tr['al']['id']
             tracks.append(Track(name, track_id, artists, album, album_id))
         return tracks
 
@@ -220,7 +220,7 @@ class AlbumMenu(MenuNode):
         offset = page * 7
         payload = apis.user.GetUserAlbumSubs(7, offset)
         has_more = payload['hasMore']
-        data = [(artist['name'], artist['id']) for artist in payload['data']]
+        data = [(ar['name'], ar['id']) for ar in payload['data']]
         return has_more, data
 
     @staticmethod
@@ -228,12 +228,12 @@ class AlbumMenu(MenuNode):
     def get_tracks(album_id: str) -> list:
         payload = apis.album.GetAlbumInfo(album_id)['songs']
         tracks = []
-        for track in payload:
-            name = track['name']
-            track_id = track['id']
-            artists = ', '.join([artist['name'] for artist in track['ar']])
-            album = track['al']['name']
-            album_id = track['al']['id']
+        for tr in payload:
+            name = tr['name']
+            track_id = tr['id']
+            artists = {ar['id']: ar['name'] for ar in tr['ar']}
+            album = tr['al']['name']
+            album_id = tr['al']['id']
             tracks.append(Track(name, track_id, artists, album, album_id))
         return tracks
 
@@ -259,11 +259,11 @@ class PlaylistMenu(MenuNode):
     def get_tracks(playlist: str) -> list:
         payload = apis.playlist.GetPlaylistInfo(playlist)['playlist']['tracks']
         tracks = []
-        for track in payload:
-            name = track['name']
-            track_id = track['id']
-            artists = ', '.join([artist['name'] for artist in track['ar']])
-            album = track['al']['name']
-            album_id = track['al']['id']
+        for tr in payload:
+            name = tr['name']
+            track_id = tr['id']
+            artists = {ar['id']: ar['name'] for ar in tr['ar']}
+            album = tr['al']['name']
+            album_id = tr['al']['id']
             tracks.append(Track(name, track_id, artists, album, album_id))
         return tracks

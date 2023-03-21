@@ -18,7 +18,7 @@ class Track:
 
         self.name: str = name
         self.id: int = _id
-        self.artists: str = artists
+        self.artist_ids: dict[int, str] = artists
         self.album: str = album
         self.album_id: int = album_id
         self.local: bool = _id in self._locals
@@ -50,6 +50,10 @@ class Track:
                 p.update(self.task, total=self.size, completed=self.xfered)
                 return p
         return ''
+
+    @property
+    def artists(self):
+        return ', '.join(self.artist_ids.values())
 
     class EmptyTrack:
         # The player receives this placeholder object at startup

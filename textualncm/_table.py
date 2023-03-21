@@ -183,14 +183,28 @@ class TrackTable(TableMixin, DataTable):
         elif col_key == 'track':
             self.action_play()
         elif col_key == 'artist':
-            # TODO
-            pass
+            artists = self.tracks[self.cursor_row].artist_ids
+            if len(artists) == 1:
+                artist_id = list(artists.keys())[0]
+                self.tracks = ArtistMenu.get_tracks(artist_id)
+            else:
+                artists = [{'name': v, 'id': k} for k, v in artists.items()]
+                message = self.ShowArtists(self, artists)
+                self.post_message_no_wait(message)
+            self.update()
         elif col_key == 'album':
             track = self.tracks[self.cursor_row]
             self.tracks = AlbumMenu.get_tracks(str(track.album_id))
             self.update()
         elif col_key == 'local':
             self.action_download()
+
+    class ShowArtists(Message):
+        """Show an artist table when selecting multiple arists"""
+
+        def __init__(self, sender: MessageTarget, artists: list):
+            super().__init__(sender)
+            self.artists = artists
 
     def action_subset(self) -> None:
         cursor_keys = self.coordinate_to_cell_key(self.cursor_coordinate)
@@ -253,7 +267,7 @@ class ArtistTable(TableMixin, DataTable):
 
     def action_select_cursor(self) -> None:
         super().action_select_cursor()
-        artist_id = self.artists[self.cursor_row]['artist_id']
+        artist_id = self.artists[self.cursor_row]['id']
         tracks = ArtistMenu.get_tracks(artist_id)
         message = self.ShowTracks(self, tracks)
         self.post_message_no_wait(message)
@@ -304,4 +318,10 @@ class Tables(Container):
         self.switch(1)
         table = self.query_one(TrackTable)
         table.tracks = message.tracks
+        table.update()
+
+    def on_track_table_show_artists(self, message: TrackTable.ShowArtists):
+        self.switch(100)
+        table = self.query_one(ArtistTable)
+        table.artists = message.artists
         table.update()
