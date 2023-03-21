@@ -213,8 +213,8 @@ class TrackTable(TableMixin, DataTable):
         if col_key == 'liked':
             self.tracks = [track for track in self.tracks if track.liked]
         elif col_key == 'artist':
-            # TODO
-            pass
+            artist_id = list(cursor_track.artist_ids)[0]
+            self.tracks = [tr for tr in self.tracks if artist_id in tr.artist_ids]
         elif col_key == 'album':
             self.tracks = [track for track in self.tracks if track.album_id == cursor_track.album_id]
         elif col_key == 'local':
@@ -243,14 +243,15 @@ class AlbumTable(TableMixin, DataTable):
         super().action_select_cursor()
         cursor_keys = self.coordinate_to_cell_key(self.cursor_coordinate)
         col_key = cursor_keys.column_key
+        album = self.albums[self.cursor_row]
         if col_key == 'album':
-            album = self.albums[self.cursor_row]
             tracks = AlbumMenu.get_tracks(album['album_id'])
             message = self.ShowTracks(self, tracks)
             self.post_message_no_wait(message)
         elif col_key == 'artist':
-            # TODO
-            pass
+            tracks = ArtistMenu.get_tracks(album['artist_id'])
+            message = self.ShowTracks(self, tracks)
+            self.post_message_no_wait(message)
 
 
 class ArtistTable(TableMixin, DataTable):

@@ -91,12 +91,14 @@ class Search(Input):
             name = al['name']
             album_id = al['id']
             artist = al['artist']['name']
+            artist_id = al['artist']['id']
             release = date.fromtimestamp(al['publishTime'] / 1000).isoformat()
             number = al['size']
             albums.append(
                 {'name': name,
                  'album_id': album_id,
                  'artist': artist,
+                 'artist_id': artist_id,
                  'release': release,
                  'number': number
                  }
