@@ -84,9 +84,9 @@ class MenuTree(Tree):
     BINDINGS = [
         Binding("k", "cursor_up", "Cursor Up", show=False),
         Binding("j", "cursor_down", "Cursor Down", show=False),
-        Binding("p", "play", "Play"),
-        Binding("d", "download", "Download"),
-        Binding('space', 'space', 'Space')  # Override default binding
+        Binding("p", "play", "播放"),
+        Binding("d", "download", "下载"),
+        Binding('space', 'space', 'Space', show=False)  # Override default binding
     ]
 
     def on_mount(self):

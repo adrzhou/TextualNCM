@@ -41,18 +41,18 @@ class TrackTable(TableMixin, DataTable):
     watchlist: set[Track] = set()
 
     BINDINGS = [
-        Binding("p", "play", "Play"),
-        Binding("f", "like", "Like/Unlike"),
-        Binding("d", "download", "Download/Delete"),
-        Binding("s", "subset", "Subset")
+        Binding("p", "play", "播放"),
+        Binding("f", "like", "喜欢/取消喜欢"),
+        Binding("d", "download", "下载/删除"),
+        Binding("s", "subset", "筛选")
     ]
 
     def on_mount(self):
-        self.add_column('Liked', key='liked')
-        self.add_column('Track', width=40, key='track')
-        self.add_column('Artist', width=30, key='artist')
-        self.add_column('Album', width=30, key='album')
-        self.add_column('Local', width=30, key='local')
+        self.add_column('喜欢', key='liked')
+        self.add_column('曲名', width=40, key='track')
+        self.add_column('艺人', width=30, key='artist')
+        self.add_column('专辑', width=30, key='album')
+        self.add_column('本地', width=30, key='local')
         self.set_interval(1, self.update_progress)
 
     def update(self):

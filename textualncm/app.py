@@ -16,10 +16,9 @@ class NeteaseCloudMusic(App):
     """A textual user interface for Netease Cloud Music"""
 
     CSS_PATH = 'app.css'
+    TITLE = '网易云音乐'
     BINDINGS = [
-        Binding('p', 'play', 'Play'),
-        Binding('d', 'download', 'Download'),
-        Binding('q', 'quit', 'Quit'),
+        Binding('q', 'quit', '退出'),
         Binding('m', 'mode', 'Toggle Mode', show=False),
         Binding('g', 'current', 'Current', show=False),
         Binding('space', 'pause', 'Play/Pause', show=False),
