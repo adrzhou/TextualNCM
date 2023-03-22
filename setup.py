@@ -2,7 +2,7 @@ import sys
 from cx_Freeze import setup, Executable
 
 
-sys.path.append('/home/adrzhou/Documents/TextualNCM/textualncm')
+sys.path.append('./textualncm')
 # Dependencies are automatically detected, but it might need
 # fine tuning.
 build_options = {'packages': [], 'excludes': [], 
