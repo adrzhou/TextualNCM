@@ -90,6 +90,7 @@ class MenuTree(Tree):
     ]
 
     def on_mount(self):
+        self.root.add_leaf('每日推荐歌曲')
         self.add_menu(ArtistMenu()).next()
         self.add_menu(AlbumMenu()).next()
         self.add_menu(PlaylistMenu()).next()
@@ -125,6 +126,10 @@ class MenuTree(Tree):
         elif cursor.data == 'prev':
             menu.prev()
             self.refresh()
+        elif cursor.label.plain == '每日推荐歌曲':
+            tracks = get_daily_songs()
+            message = self.UpdateTable(self, tracks)
+            self.post_message_no_wait(message)
         elif cursor.data:
             tracks = menu.get_tracks(cursor.data)
             message = self.UpdateTable(self, tracks)
@@ -267,3 +272,16 @@ class PlaylistMenu(MenuNode):
             album_id = tr['al']['id']
             tracks.append(Track(name, track_id, artists, album, album_id))
         return tracks
+
+
+def get_daily_songs() -> list[Track]:
+    payload = apis.user.GetDailyRecommends()['data']['dailySongs']
+    tracks = []
+    for tr in payload:
+        name = tr['name']
+        track_id = tr['id']
+        artists = {ar['id']: ar['name'] for ar in tr['ar']}
+        album = tr['al']['name']
+        album_id = tr['al']['id']
+        tracks.append(Track(name, track_id, artists, album, album_id))
+    return tracks
