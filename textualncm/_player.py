@@ -4,7 +4,7 @@ from datetime import timedelta
 from random import randint
 from textual.widget import Widget
 from textual.reactive import reactive
-from textual.message import Message, MessageTarget
+from textual.message import Message
 from rich.progress import Progress, BarColumn, TextColumn
 from rich.console import group
 from rich.text import Text
@@ -135,14 +135,14 @@ class Player(Widget):
 
     def end_reached(self, event):
         _ = event
-        message = self.EndReached(self)
-        self.post_message_no_wait(message)
+        message = self.EndReached()
+        self.post_message(message)
 
     class EndReached(Message):
         """The media player has reached the end of the current track"""
 
-        def __init__(self, sender: MessageTarget):
-            super().__init__(sender)
+        def __init__(self):
+            super().__init__()
 
     def on_player_end_reached(self, message: Message):
         _ = message

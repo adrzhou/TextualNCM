@@ -3,7 +3,7 @@ from functools import cache
 from _track import Track
 from textual.widgets import Tree
 from textual.widgets.tree import TreeNode
-from textual.message import Message, MessageTarget
+from textual.message import Message
 from textual.binding import Binding
 
 
@@ -101,8 +101,8 @@ class MenuTree(Tree):
         liked = playlist_menu.get_tracks(liked_node.data)
         for track in liked:
             track.liked = True
-        message = self.Likes(self, liked)
-        self.post_message_no_wait(message)
+        message = self.Likes(liked)
+        self.post_message(message)
 
     def add_menu(self, node: MenuNode):
         node._tree = self
@@ -128,24 +128,24 @@ class MenuTree(Tree):
             self.refresh()
         elif cursor.label.plain == '每日推荐歌曲':
             tracks = get_daily_songs()
-            message = self.UpdateTable(self, tracks)
-            self.post_message_no_wait(message)
+            message = self.UpdateTable(tracks)
+            self.post_message(message)
         elif cursor.data:
             tracks = menu.get_tracks(cursor.data)
-            message = self.UpdateTable(self, tracks)
-            self.post_message_no_wait(message)
+            message = self.UpdateTable(tracks)
+            self.post_message(message)
 
     class UpdateTable(Message):
         """Update track table message"""
 
-        def __init__(self, sender: MessageTarget, tracks: list):
+        def __init__(self, tracks: list):
             self.tracks = tracks
-            super().__init__(sender)
+            super().__init__()
 
     class Likes(Message):
-        def __init__(self, sender: MessageTarget, tracks: list):
+        def __init__(self, tracks: list):
             self.tracks = tracks
-            super().__init__(sender)
+            super().__init__()
 
     def action_play(self):
         cursor: TreeNode = self.cursor_node
@@ -154,15 +154,15 @@ class MenuTree(Tree):
             return
         if cursor.data:
             tracks = menu.get_tracks(cursor.data)
-            message = self.Play(self, tracks)
-            self.post_message_no_wait(message)
+            message = self.Play(tracks)
+            self.post_message(message)
 
     class Play(Message):
         """Tell the app to play a playlist"""
 
-        def __init__(self, sender: MessageTarget, tracks: list[Track]):
+        def __init__(self, tracks: list[Track]):
             self.tracks = tracks
-            super().__init__(sender)
+            super().__init__()
 
     def action_download(self):
         cursor: TreeNode = self.cursor_node
@@ -171,15 +171,15 @@ class MenuTree(Tree):
             return
         if cursor.data:
             tracks = menu.get_tracks(cursor.data)
-            message = self.Download(self, tracks)
-            self.post_message_no_wait(message)
+            message = self.Download(tracks)
+            self.post_message(message)
 
     class Download(Message):
         """Tell the app to download a playlist"""
 
-        def __init__(self, sender: MessageTarget, tracks: list[Track]):
+        def __init__(self, tracks: list[Track]):
             self.tracks = tracks
-            super().__init__(sender)
+            super().__init__()
 
     def action_space(self):
         self.app.action_pause()

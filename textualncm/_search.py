@@ -3,7 +3,7 @@ from datetime import date
 from pyncm.apis.cloudsearch import GetSearchResult
 from textual.widgets import Input
 from textual.binding import Binding
-from textual.message import Message, MessageTarget
+from textual.message import Message
 
 SONG = 1         # 单曲
 ALBUM = 10       # 专辑
@@ -61,14 +61,14 @@ class Search(Input):
         else:
             results = self.search_playlists(payload)
 
-        message = self.UpdateTable(self, mode=self.mode, results=results)
-        self.post_message_no_wait(message)
+        message = self.UpdateTable(mode=self.mode, results=results)
+        self.post_message(message)
 
     class UpdateTable(Message):
         """Tell the app to update the table with search results"""
 
-        def __init__(self, sender: MessageTarget, mode: int, results: list):
-            super().__init__(sender)
+        def __init__(self, mode: int, results: list):
+            super().__init__()
             self.mode = mode
             self.results = results
 

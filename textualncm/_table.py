@@ -8,7 +8,7 @@ from textual.widgets import DataTable
 from textual.widgets.data_table import CellDoesNotExist
 from textual.coordinate import Coordinate
 from textual.binding import Binding
-from textual.message import Message, MessageTarget
+from textual.message import Message
 from textual.containers import Container
 from pathlib import Path
 
@@ -30,9 +30,9 @@ class TableMixin(DataTable):
         self.show_cursor = True
 
     class ShowTracks(Message):
-        def __init__(self, sender: MessageTarget, tracks: list[Track]):
+        def __init__(self, tracks: list[Track]):
             self.tracks = tracks
-            super().__init__(sender)
+            super().__init__()
 
 
 class TrackTable(TableMixin, DataTable):
@@ -97,22 +97,22 @@ class TrackTable(TableMixin, DataTable):
     class Play(Message):
         """Tell the app to play a track from the track table"""
 
-        def __init__(self, sender: MessageTarget, track: Track, tracks: list):
+        def __init__(self, track: Track, tracks: list):
             self.track = track
             self.tracks = tracks
-            super().__init__(sender)
+            super().__init__()
 
     def action_play(self):
         track = self.tracks[self.cursor_row]
-        message = self.Play(self, track, self.tracks)
-        self.post_message_no_wait(message)
+        message = self.Play(track, self.tracks)
+        self.post_message(message)
 
     class Liked(Message):
         """Notify the app that a track has been liked/unliked"""
 
-        def __init__(self, sender: MessageTarget, track: Track):
+        def __init__(self, track: Track):
             self.track = track
-            super().__init__(sender)
+            super().__init__()
 
     def like(self, track: Track):
         loop = asyncio.get_event_loop()
@@ -140,8 +140,8 @@ class TrackTable(TableMixin, DataTable):
         if self.tracks is self.likes:
             self.update()
 
-        message = self.Liked(self, track)
-        self.post_message_no_wait(message)
+        message = self.Liked(track)
+        self.post_message(message)
         loop.run_in_executor(None, thread)
 
     def action_like(self):
@@ -151,9 +151,9 @@ class TrackTable(TableMixin, DataTable):
     class Download(Message):
         """Tell the app to download a track from the track table"""
 
-        def __init__(self, sender: MessageTarget, track: Track):
+        def __init__(self, track: Track):
             self.track = track
-            super().__init__(sender)
+            super().__init__()
 
     def action_download(self):
         track = self.tracks[self.cursor_row]
@@ -164,8 +164,8 @@ class TrackTable(TableMixin, DataTable):
             self.unlocal(track)
         else:
             self.watchlist.add(track)
-            message = self.Download(self, track)
-            self.post_message_no_wait(message)
+            message = self.Download(track)
+            self.post_message(message)
 
     def scroll_to_track(self, track: Track) -> None:
         row = self.tracks.index(track)
@@ -189,8 +189,8 @@ class TrackTable(TableMixin, DataTable):
                 self.tracks = ArtistMenu.get_tracks(artist_id)
             else:
                 artists = [{'name': v, 'id': k} for k, v in artists.items()]
-                message = self.ShowArtists(self, artists)
-                self.post_message_no_wait(message)
+                message = self.ShowArtists(artists)
+                self.post_message(message)
             self.update()
         elif col_key == 'album':
             track = self.tracks[self.cursor_row]
@@ -202,8 +202,8 @@ class TrackTable(TableMixin, DataTable):
     class ShowArtists(Message):
         """Show an artist table when selecting multiple arists"""
 
-        def __init__(self, sender: MessageTarget, artists: list):
-            super().__init__(sender)
+        def __init__(self, artists: list):
+            super().__init__()
             self.artists = artists
 
     def action_subset(self) -> None:
@@ -246,12 +246,12 @@ class AlbumTable(TableMixin, DataTable):
         album = self.albums[self.cursor_row]
         if col_key == 'album':
             tracks = AlbumMenu.get_tracks(album['album_id'])
-            message = self.ShowTracks(self, tracks)
-            self.post_message_no_wait(message)
+            message = self.ShowTracks(tracks)
+            self.post_message(message)
         elif col_key == 'artist':
             tracks = ArtistMenu.get_tracks(album['artist_id'])
-            message = self.ShowTracks(self, tracks)
-            self.post_message_no_wait(message)
+            message = self.ShowTracks(tracks)
+            self.post_message(message)
 
 
 class ArtistTable(TableMixin, DataTable):
@@ -270,8 +270,8 @@ class ArtistTable(TableMixin, DataTable):
         super().action_select_cursor()
         artist_id = self.artists[self.cursor_row]['id']
         tracks = ArtistMenu.get_tracks(artist_id)
-        message = self.ShowTracks(self, tracks)
-        self.post_message_no_wait(message)
+        message = self.ShowTracks(tracks)
+        self.post_message(message)
 
 
 class PlaylistTable(TableMixin, DataTable):
@@ -292,8 +292,8 @@ class PlaylistTable(TableMixin, DataTable):
         super().action_select_cursor()
         plist_id = self.playlists[self.cursor_row]['playlist_id']
         tracks = PlaylistMenu.get_tracks(plist_id)
-        message = self.ShowTracks(self, tracks)
-        self.post_message_no_wait(message)
+        message = self.ShowTracks(tracks)
+        self.post_message(message)
 
 
 class Tables(Container):
