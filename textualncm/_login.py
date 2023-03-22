@@ -1,9 +1,16 @@
+import sys
 from pathlib import Path
 from pyncm import apis
 from pyncm import DumpSessionAsString, SetCurrentSession, LoadSessionFromString, GetCurrentSession
 
-package_path = Path(__file__).parent
-save_path = package_path.joinpath('save')
+
+if getattr(sys, "frozen", False):
+    # The application is frozen
+    datadir = Path(sys.executable).parent
+else:
+    # The application is not frozen
+    datadir = Path(__file__).parent
+save_path = datadir.joinpath('save')
 
 
 def login():

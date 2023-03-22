@@ -1,3 +1,4 @@
+import sys
 from _login import login
 from _menu import MenuTree
 from _table import *
@@ -12,10 +13,18 @@ from pathlib import Path
 from multiprocessing import Process
 
 
+if getattr(sys, "frozen", False):
+    # The application is frozen
+    datadir = Path(sys.executable).parent
+else:
+    # The application is not frozen
+    datadir = Path(__file__).parent
+
+
 class NeteaseCloudMusic(App):
     """A textual user interface for Netease Cloud Music"""
 
-    CSS_PATH = 'app.css'
+    CSS_PATH = datadir.joinpath('app.css')
     TITLE = '网易云音乐'
     BINDINGS = [
         Binding('q', 'quit', '退出'),
