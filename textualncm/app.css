@@ -2,19 +2,33 @@ Screen {
     layout: grid;
     grid-size: 2 3;
     grid-columns: 1fr 2fr;
-    grid-rows: 10% 75% 15%;
+    grid-rows: 10% 72% 18%;
 }
 
 #tree {
     row-span: 2;
+    border: round red;
+    background: blue 0%;
+    margin: 1 1 0 2;
+    overflow-x: hidden
 }
 
 #tables {
     row-span: 2;
-    height: 100%
+    height: 100%;
+    margin: 0 2 1 1;
+    border: round red;
 }
 
 #player {
     content-align: center middle;
-    height: 100%
+    height: 100%;
+    margin: 1 1 1 2;
+    border: round red;
+}
+
+#searchbar {
+    border: round red;
+    margin: 1 2 0 1;
+    background: blue 0%
 }
