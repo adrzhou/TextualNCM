@@ -274,6 +274,7 @@ class PlaylistMenu(MenuNode):
         return tracks
 
 
+@cache
 def get_daily_songs() -> list[Track]:
     payload = apis.user.GetDailyRecommends()['data']['dailySongs']
     tracks = []
