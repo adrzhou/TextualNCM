@@ -14,10 +14,8 @@ from multiprocessing import Process
 
 
 if getattr(sys, "frozen", False):
-    # The application is frozen
     datadir = Path(sys.executable).parent
 else:
-    # The application is not frozen
     datadir = Path(__file__).parent
 
 

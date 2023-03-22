@@ -5,12 +5,13 @@ from pyncm import DumpSessionAsString, SetCurrentSession, LoadSessionFromString,
 
 
 if getattr(sys, "frozen", False):
-    # The application is frozen
     datadir = Path(sys.executable).parent
 else:
-    # The application is not frozen
     datadir = Path(__file__).parent
 save_path = datadir.joinpath('save')
+if not save_path.exists():
+    with open(save_path, 'w') as save_fp:
+        pass
 
 
 def login():

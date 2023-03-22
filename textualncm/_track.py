@@ -1,6 +1,16 @@
+import sys
 from weakref import WeakValueDictionary
 from pathlib import Path
 from rich.progress import Progress, BarColumn
+
+
+if getattr(sys, "frozen", False):
+    datadir = Path(sys.executable).parent
+else:
+    datadir = Path(__file__).parent
+downloads = datadir.joinpath('downloads')
+if not downloads.exists():
+    downloads.mkdir()
 
 
 class Track:
@@ -9,7 +19,7 @@ class Track:
 
     # The '_locals' variable does not need to be updated during runtime
     # It only stores the ids of local tracks at start time
-    _locals = [int(path.stem) for path in Path().joinpath('downloads').iterdir()]
+    _locals = [int(path.stem) for path in downloads.iterdir()]
 
     def __init__(self, name, _id, artists, album, album_id):
         # Prevent initialization on created instance

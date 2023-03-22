@@ -6,7 +6,7 @@ sys.path.append('./textualncm')
 # Dependencies are automatically detected, but it might need
 # fine tuning.
 build_options = {'packages': [], 'excludes': [], 
-                 'include_files': ['textualncm/downloads', 'textualncm/save', 'textualncm/app.css']}
+                 'include_files': ['textualncm/app.css']}
 
 base = 'console'
 
