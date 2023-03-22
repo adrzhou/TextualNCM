@@ -225,7 +225,7 @@ class AlbumMenu(MenuNode):
         offset = page * 7
         payload = apis.user.GetUserAlbumSubs(7, offset)
         has_more = payload['hasMore']
-        data = [(ar['name'], ar['id']) for ar in payload['data']]
+        data = [(ar['name'][:30], ar['id']) for ar in payload['data']]
         return has_more, data
 
     @staticmethod
