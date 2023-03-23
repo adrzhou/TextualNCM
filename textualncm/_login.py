@@ -22,8 +22,9 @@ def login():
         print('Please choose')
         print('1. Login via email')
         print('2. Login via cellphone')
+        print('3. Login via cellphone verification')
         via = input('Choice: ')
-        if via not in '12':
+        if via not in '123':
             print('Invalid choice')
             return choose()
         return via
@@ -31,18 +32,27 @@ def login():
     if not save:
         choice = choose()
         if choice == '1':
-            email, phone = input('Email: '), ''
+            email = input('Email: ')
             passwd = input('Password: ')
             try:
                 apis.login.LoginViaEmail(email, passwd)
             except apis.login.LoginFailedException:
                 print('Login failed')
                 login()
-        else:
-            phone, email = input('Phone: '), ''
+        elif choice == '2':
+            phone = input('Phone: ')
             passwd = input('Password: ')
             try:
                 apis.login.LoginViaCellphone(phone, passwd)
+            except apis.login.LoginFailedException:
+                print('Login failed')
+                login()
+        elif choice == '3':
+            phone = input('Phone: ')
+            apis.login.SetSendRegisterVerifcationCodeViaCellphone(phone)
+            captcha = input('Verification code: ')
+            try:
+                apis.login.LoginViaCellphone(phone, captcha=captcha)
             except apis.login.LoginFailedException:
                 print('Login failed')
                 login()
