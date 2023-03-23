@@ -10,7 +10,7 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Header, Footer
 from pathlib import Path
-from multiprocessing import Process
+from threading import Thread
 
 
 if getattr(sys, "frozen", False):
@@ -150,11 +150,10 @@ class NeteaseCloudMusic(App):
         table.focus()
 
 
-# if __name__ == '__main__':
-login()
-server = Process(target=proxy.run)
-server.start()
-app = NeteaseCloudMusic()
-app.run()
-server.terminate()
-server.join()
+if __name__ == '__main__':
+    login()
+    server = Thread(target=proxy.run)
+    server.daemon = True
+    server.start()
+    app = NeteaseCloudMusic()
+    app.run()
