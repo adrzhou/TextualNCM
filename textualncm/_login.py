@@ -19,44 +19,44 @@ def login():
         save = fp.read()
 
     def choose():
-        print('Please choose')
-        print('1. Login via email')
-        print('2. Login via cellphone')
-        print('3. Login via cellphone verification')
-        via = input('Choice: ')
+        print('请选择登录方式')
+        print('1. 邮箱登录')
+        print('2. 手机号+密码登录')
+        print('3. 手机号+验证码登录')
+        via = input('选择: ')
         if via not in '123':
-            print('Invalid choice')
+            print('无效选择')
             return choose()
         return via
 
     if not save:
         choice = choose()
         if choice == '1':
-            email = input('Email: ')
-            passwd = input('Password: ')
+            email = input('邮箱: ')
+            passwd = input('密码: ')
             try:
                 apis.login.LoginViaEmail(email, passwd)
             except apis.login.LoginFailedException:
-                print('Login failed')
+                print('登录失败')
                 login()
         elif choice == '2':
-            phone = input('Phone: ')
-            passwd = input('Password: ')
+            phone = input('手机号: ')
+            passwd = input('密码: ')
             try:
                 apis.login.LoginViaCellphone(phone, passwd)
             except apis.login.LoginFailedException:
-                print('Login failed')
+                print('登录失败')
                 login()
         elif choice == '3':
-            phone = input('Phone: ')
+            phone = input('手机号: ')
             apis.login.SetSendRegisterVerifcationCodeViaCellphone(phone)
-            captcha = input('Verification code: ')
+            captcha = input('验证码: ')
             try:
                 apis.login.LoginViaCellphone(phone, captcha=captcha)
             except apis.login.LoginFailedException:
-                print('Login failed')
+                print('登录失败')
                 login()
-        if input('Save current session for automatic login? (Y/n) ') == 'Y':
+        if input('保存登录信息以便自动登录？ (Y/n) ') == 'Y':
             session = DumpSessionAsString(GetCurrentSession())
             with open('save', 'w') as fp:
                 fp.write(session)
