@@ -1,6 +1,10 @@
 # TextualNCM
 一款用 Python 3 编写，基于 [Textual][1] 和 [pyncm][2] 开发的网易云音乐命令行客户端
 
+## Konsole 预览
+
+![TextualNCM_Linux_preview](https://user-images.githubusercontent.com/101899715/227410554-dd24d142-bc31-4332-9d2f-84310829740c.png)
+
 ## 依赖
 音频文件的播放借助 [VLC media player][8] 完成  
 使用本软件之前请安装 VLC media player
@@ -29,6 +33,11 @@
 
 *注: 此为 [mos9527/pyncm][2] 的 fork，请复制代码仓库至本地后用此命令安装
 `python setup.py install`
+
+## 运行
+
+压缩包解压之后，在当前目录启动命令行，并输入此命令  
+`.\TextualNCM.exe`
 
 [1]: https://textual.textualize.io/
 [2]: https://github.com/mos9527/pyncm
