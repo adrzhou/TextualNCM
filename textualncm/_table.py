@@ -320,9 +320,11 @@ class Tables(Container):
         table = self.query_one(TrackTable)
         table.tracks = message.tracks
         table.update()
+        table.focus()
 
     def on_track_table_show_artists(self, message: TrackTable.ShowArtists):
         self.switch(100)
         table = self.query_one(ArtistTable)
         table.artists = message.artists
         table.update()
+        table.focus()

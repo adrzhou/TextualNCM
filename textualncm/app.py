@@ -98,6 +98,7 @@ class NeteaseCloudMusic(App):
         table: TrackTable = self.query_one(TrackTable)
         table.tracks = message.tracks
         table.update()
+        table.focus()
 
     def on_menu_tree_likes(self, message: MenuTree.Likes):
         table: TrackTable = self.query_one(TrackTable)
